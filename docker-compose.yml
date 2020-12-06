@@ -1,0 +1,44 @@
+version: "3.8"
+services:
+  # ---------------------------------------------------------------- #
+  web1:
+    image: "tutum/hello-world"
+    ports:
+      - "5000:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web1-http.rule=Host(`test5000.localhost`)"
+
+  # ---------------------------------------------------------------- #
+  web2:
+    image: "tutum/hello-world"
+    ports:
+      - "6000:80"
+    labels:
+      - "traefik.enable=true"
+      - traefik.http.routers.web2-http.rule=Host(`test6000.localhost`)
+  
+  # ---------------------------------------------------------------- #
+  web3:
+    image: "tutum/hello-world"
+    ports:
+      - "7000:80"
+    labels:
+      - "traefik.enable=true"
+      - traefik.http.routers.web3-http.rule=Host(`test7000.localhost`)
+  
+  # ---------------------------------------------------------------- #
+  traefik:
+    image: "traefik:v2.3"
+    container_name: "traefik"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
